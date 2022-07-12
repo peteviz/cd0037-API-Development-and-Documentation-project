@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import os
 import unittest
 import json
@@ -5,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from flaskr import create_app
 from models import setup_db, Question, Category
+from settings import DB_NAME, DB_USER, DB_PASSWORD
 
 
 class TriviaTestCase(unittest.TestCase):
@@ -16,10 +18,10 @@ class TriviaTestCase(unittest.TestCase):
         self.client = self.app.test_client
         self.database_name = 'trivia'
         self.database_path = 'postgres://{}:{}@{}/{}'.format(
-            'postgres', 'Dam1l0laak1nd3', 'localhost:5432', 'trivia')
-        # self.database_name = "trivia"
-        # self.database_path = "postgres://{}/{}".format(
-        #     'localhost:5000', self.database_name)
+            DB_USER, DB_PASSWORD, 'localhost:5432', DB_NAME)
+        # self.database_path = 'postgres://{}:{}@{}/{}'.format(
+        #     'postgres', 'Dam1l0laak1nd3', 'localhost:5432', 'trivia')
+
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
@@ -128,7 +130,47 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
 
+    def test_failed_play_quiz(self):
+        response = self.client().post('/quizzes', json={})
+        data = json.loads(response.data)
 
-        # Make the tests conveniently executable
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Bad Request')
+
+    def test_play_quiz_questions(self):
+        """Tests playing quiz questions"""
+
+        entries = {
+            'previous_questions': ['', ''],
+            'quiz_category': {
+                'type': 'entertainment',
+                'id': '5'
+            }
+        }
+        # make request and process response
+        response = self.client().post('/quizzes', json=entries)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['question'])
+
+    def test_search_successful(self):
+        """Test to check a successful search operation"""
+        response = self.client().post('/questions/search',
+                                      json={'searchTerm': 'what'})
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+
+    def test_search_failed(self):
+        """Test to check a failed search operation"""
+        response = self.client().post('/questions/search',
+                                      json={'searchTerm': None})
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+
+    # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()

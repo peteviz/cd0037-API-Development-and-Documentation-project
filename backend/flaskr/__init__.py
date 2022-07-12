@@ -66,7 +66,6 @@ def create_app(test_config=None):
     including pagination (every 10 questions).
     This endpoint should return a list of questions,
     number of total questions, current category, categories.
-
     TEST: At this point, when you start the application
     you should see questions and categories generated,
     ten questions per page and pagination at the bottom of the screen for three pages.
@@ -96,7 +95,6 @@ def create_app(test_config=None):
     """
     @TODO:
     Create an endpoint to DELETE question using a question ID.
-
     TEST: When you click the trash icon next to a question, the question will be removed.
     This removal will persist in the database and when you refresh the page.
     """
@@ -121,7 +119,6 @@ def create_app(test_config=None):
     Create an endpoint to POST a new question,
     which will require the question and answer text,
     category, and difficulty score.
-
     TEST: When you submit a question on the "Add" tab,
     the form will clear and the question will appear at the end of the last page
     of the questions list in the "List" tab.
@@ -157,7 +154,6 @@ def create_app(test_config=None):
     """
     @TODO:
     Create a GET endpoint to get questions based on category.
-
     TEST: In the "List" tab / main screen, clicking on one of the
     categories in the left column will cause only questions of that
     category to be shown.
@@ -188,7 +184,6 @@ def create_app(test_config=None):
     This endpoint should take category and previous question parameters
     and return a random questions within the given category,
     if provided, and that is not one of the previous questions.
-
     TEST: In the "Play" tab, after a user selects "All" or a category,
     one question at a time is displayed, the user is allowed to answer
     and shown whether they were correct or not.
@@ -196,26 +191,70 @@ def create_app(test_config=None):
     @app.route('/quizzes', methods=['POST'])
     def play_quiz():
         data = request.get_json()
-        quiz_category = data.get('quiz_category', None)
-        previous_questions = data.get('previous_questions', None)
+        quiz_category = data.get('quiz_category')
+        previous_questions = data.get('previous_questions')
 
+        if ((quiz_category is None) or (previous_questions is None)):
+            abort(400)
         try:
-            if (quiz_category is None):
+            if (quiz_category['id'] == 0):
                 quiz_questions = Question.query.all()
             else:
                 quiz_questions = Question.query.filter_by(
                     category=quiz_category['id']).all()
-            random_question = quiz_questions[random.randrange(
-                0, len(quiz_questions))].format() if len(quiz_questions) > 0 else None
+
+            def randomized_question_pick():
+                return quiz_questions[random.randint(0, len(quiz_questions))]
+
+            new_question = randomized_question_pick()
+            used = True
+            while used:
+                if new_question.id in previous_questions:
+                    new_question = randomized_question_pick()
+                else:
+                    used = False
 
             return jsonify({
                 'success': True,
-                'question': random_question
+                'question': new_question.format()
 
             })
         except Exception as eror:
-            print(e)
+            print(eror)
             abort(400)
+
+    """
+        @TODO:
+        Create a POST endpoint to get questions based on a search term.
+        It should return any questions for whom the search term
+        is a substring of the question.
+
+        TEST: Search by any phrase. The questions list will update to include
+        only question that include that string within their question.
+        Try using the word "title" to start.
+        """
+    @app.route('/questions/search', methods=['POST'])
+    def search_query():
+        data = request.get_json()
+        search_term = data.get('searchTerm', None)
+        if (search_term is None):
+            abort(422)
+        try:
+            results = Question.query.filter(
+                Question.question.ilike(f'%{search_term}%')).all()
+
+            current_questions_page = paginate_questions(
+                request, results, QUESTIONS_PER_PAGE)
+
+            return jsonify({
+                'success': True,
+                'questions': current_questions_page,
+                'total_questions': len(results),
+                'current_category': None
+            })
+        except Exception as error:
+            print(e)
+            abort(404)
 
     """
     @TODO:
@@ -226,7 +265,7 @@ def create_app(test_config=None):
     def bad_request_handler(error):
         return jsonify({
             'success': False,
-            'error': error,
+            'error': 400,
             'message': "Bad Request"
         }), 400
 
@@ -245,5 +284,4 @@ def create_app(test_config=None):
             'error': 422,
             'message': "Request was unprocessable"
         }), 422
-
     return app

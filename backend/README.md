@@ -1,4 +1,4 @@
-# Backend - Trivia API
+<!-- # Backend - Trivia API
 
 ## Setting up the Backend
 
@@ -87,6 +87,401 @@ You will need to provide detailed documentation of your API endpoints including 
   "4": "History",
   "5": "Entertainment",
   "6": "Sports"
+}
+```
+
+## Testing
+
+Write at least one test for the success and at least one error behavior of each endpoint using the unittest library.
+
+To deploy the tests, run
+
+```bash
+dropdb trivia_test
+createdb trivia_test
+psql trivia_test < trivia.psql
+python test_flaskr.py
+``` -->
+
+# TRIVIA API BACKEND USING FLASK FRAMEWORK
+
+## UDACITY FULLSTACK API DEVELOPMENT
+
+### GETTIING STARTED
+
+#### Installing Dependencies
+
+#### Python 3.7
+
+The Trivia app web application was written in python language and python 3.7 is required.
+Use the following link to Install Python 3.7 (https://www.python.org/downloads/)
+
+#### Virtual Environment
+
+It is adviseable to work within a virtual environment to keep the project envrionment from external interference
+
+#### pip dependencies
+
+Navigate to the '/backend' folder to install the dependencies specified in the 'requirement.txt' file
+Run the following command 'pip install -r requirements.txt' to install dependencies.
+
+#### Key Pip Dependencies
+
+- [Flask](http://flask.pocoo.org/) is a lightweight backend microservices framework. Flask is required to handle requests and responses.
+
+- [SQLAlchemy](https://www.sqlalchemy.org/) is the Python SQL toolkit and ORM we'll use to handle the lightweight SQL database. You'll primarily work in `app.py`and can reference `models.py`.
+
+- [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/#) is the extension we'll use to handle cross-origin requests from our frontend server.
+
+### Seting up the Database
+
+With Postgres running, create a `trivia` database:
+
+```bash
+createbd trivia
+```
+
+Populate the database using the `trivia.psql` file provided. From the `backend` folder in terminal run:
+
+```bash
+psql trivia < trivia.psql
+```
+
+### Run the Server
+
+From within the `/backend` folder, first ensure you are working using your created virtual environment.
+
+To run the server, execute:
+
+```bash
+export FLASK_APP=flaskr
+export FLASK_ENV=development
+flask run
+
+```
+
+#### Frontend Dependencies
+
+npm is used to manage the software dependencies. from the `frontend` directory run:
+
+```bash
+npm install
+```
+
+## Running the Frontend in Dev Mode
+
+To run the app in development mode use `npm start`.
+
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+```bash
+npm start
+```
+
+### Error Handling
+
+Errors are returned using the json format below:
+
+```json
+{
+  "success": "False",
+  "error": 422,
+  "message": "Unprocessable entity"
+}
+```
+
+The error codes currently returned are:
+
+- 400 – bad request
+- 404 – resource not found
+- 422 – unprocessable
+- 500 – internal server error
+
+### Endpoints
+
+#### GET /categories
+
+- General:
+
+  - Returns all the categories.
+
+```json
+{
+  "categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  },
+  "success": true
+}
+```
+
+#### GET /questions
+
+- General:
+
+  - Retrieves all questions
+  - The questions are paginated using an interval of 10 questions per page.
+
+```json
+{
+  "categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  },
+  "num_all_questions": 60,
+  "questions": [
+    {
+      "answer": "Tom Cruise",
+      "category": 5,
+      "difficulty": 4,
+      "id": 4,
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    },
+    {
+      "answer": "Muhammad Ali",
+      "category": 4,
+      "difficulty": 1,
+      "id": 9,
+      "question": "What boxer's original name is Cassius Clay?"
+    },
+    {
+      "answer": "Brazil",
+      "category": 6,
+      "difficulty": 3,
+      "id": 10,
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    },
+    {
+      "answer": "Uruguay",
+      "category": 6,
+      "difficulty": 4,
+      "id": 11,
+      "question": "Which country won the first ever soccer World Cup in 1930?"
+    },
+    {
+      "answer": "George Washington Carver",
+      "category": 4,
+      "difficulty": 2,
+      "id": 12,
+      "question": "Who invented Peanut Butter?"
+    },
+    {
+      "answer": "Lake Victoria",
+      "category": 3,
+      "difficulty": 2,
+      "id": 13,
+      "question": "What is the largest lake in Africa?"
+    },
+    {
+      "answer": "Agra",
+      "category": 3,
+      "difficulty": 2,
+      "id": 15,
+      "question": "The Taj Mahal is located in which Indian city?"
+    },
+    {
+      "answer": "Mona Lisa",
+      "category": 2,
+      "difficulty": 3,
+      "id": 17,
+      "question": "La Giaconda is better known as what?"
+    },
+    {
+      "answer": "One",
+      "category": 2,
+      "difficulty": 4,
+      "id": 18,
+      "question": "How many paintings did Van Gogh sell in his lifetime?"
+    },
+    {
+      "answer": "Jackson Pollock",
+      "category": 2,
+      "difficulty": 2,
+      "id": 19,
+      "question": "Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?"
+    }
+  ],
+  "success": true
+}
+```
+
+#### DELETE /questions/<int:id\>
+
+- General:
+
+  - Deletes a question by id form the url parameter.
+
+```json
+{
+  "message": "Question has been deleted successfully",
+  "success": true,
+  "total_questions": 59
+}
+```
+
+#### POST /questions
+
+- General:
+
+  - Creates a new question based on data input.
+
+```json
+{
+                'success': True,
+                'message': "Your Question has been added successfully"
+}
+```
+
+#### POST /questions/search
+
+- General:
+
+  - Performs a search operation based on search terms given
+
+```json
+{
+  "current_category": null,
+  "questions": [
+    {
+      "answer": "Muhammad Ali",
+      "category": 4,
+      "difficulty": 1,
+      "id": 9,
+      "question": "What boxer's original name is Cassius Clay?"
+    },
+    {
+      "answer": "Tom Cruise",
+      "category": 5,
+      "difficulty": 4,
+      "id": 4,
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    },
+    {
+      "answer": "Lake Victoria",
+      "category": 3,
+      "difficulty": 2,
+      "id": 13,
+      "question": "What is the largest lake in Africa?"
+    },
+    {
+      "answer": "Mona Lisa",
+      "category": 2,
+      "difficulty": 3,
+      "id": 17,
+      "question": "La Giaconda is better known as what?"
+    },
+    {
+      "answer": "Blood",
+      "category": 1,
+      "difficulty": 4,
+      "id": 22,
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    },
+    {
+      "answer": "Lungs",
+      "category": 1,
+      "difficulty": 1,
+      "id": 88,
+      "question": "What human organ is used to breathe?"
+    },
+    {
+      "answer": "Lungs",
+      "category": 1,
+      "difficulty": 1,
+      "id": 90,
+      "question": "What human organ is used to breathe?"
+    },
+    {
+      "answer": "Lungs",
+      "category": 1,
+      "difficulty": 1,
+      "id": 92,
+      "question": "What human organ is used to breathe?"
+    },
+    {
+      "answer": "Lungs",
+      "category": 1,
+      "difficulty": 1,
+      "id": 94,
+      "question": "What human organ is used to breathe?"
+    },
+    {
+      "answer": "Lungs",
+      "category": 1,
+      "difficulty": 1,
+      "id": 96,
+      "question": "What human organ is used to breathe?"
+    }
+  ],
+  "success": true,
+  "total_questions": 51
+}
+```
+
+#### GET /categories/<int:id\>/questions
+
+- General:
+  - Returns questions in a specfied category (id).
+
+```json
+k{
+  "current_category": "Art",
+  "questions": [
+    {
+      "answer": "Mona Lisa",
+      "category": 2,
+      "difficulty": 3,
+      "id": 17,
+      "question": "La Giaconda is better known as what?"
+    },
+    {
+      "answer": "One",
+      "category": 2,
+      "difficulty": 4,
+      "id": 18,
+      "question": "How many paintings did Van Gogh sell in his lifetime?"
+    },
+    {
+      "answer": "Jackson Pollock",
+      "category": 2,
+      "difficulty": 2,
+      "id": 19,
+      "question": "Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?"
+    }
+  ],
+  "success": true,
+  "total_questions": 3
+}
+
+```
+
+#### POST /quizzes
+
+- General
+
+  - Takes the category and previous questions in the request.
+  - Return random question not in previous questions.
+
+- Sample: `curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -d '{"previous_questions": [150, 152], "quiz_category": {"type": "Science", "id": "1"}}'`
+
+```json
+{
+  "question": {
+    "answer": "Lungs",
+    "category": 1,
+    "difficulty": 1,
+    "id": 166,
+    "question": "What human organ is used to breathe?"
+  },
+  "success": true
 }
 ```
 
